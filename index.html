@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Контейнер с цветами</title>
+    <style>
+        .main-content {
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+        align-items: flex-start;
+        background-color: #f9f7f7;
+    }
+        #container {
+            width: 900px;
+            height: 1200px;
+            position: relative;
+            overflow: hidden;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 60px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .color-box {
+            width: 30px;
+            height: 30px;
+            display: inline-block;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            margin: 5px;
+            cursor: pointer;
+            border: 1px solid #000;
+        }
+        .category {
+            margin-top: 20px;
+            border: 1px solid black;
+            padding: 10px;
+        }
+        .category-title {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .image-picker {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .text-entry {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .draggable {
+            cursor: move;
+            position: absolute;
+        }
+        #toolImagesContainer {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .tool-thumbnail {
+            width: 100px;
+            height: 60px;
+            margin: 5px;
+            cursor: pointer;
+            border: 1px solid #000;
+        }
+        .tools {
+            margin-top: 20px;
+            border: 1px solid black;
+            padding: 10px;
+        }
+        .templates {
+            margin-top: 20px;
+            border: 1px solid black;
+            padding: 10px;
+        }
+        #templateImagesContainer {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .template-thumbnail {
+            width: 100px;
+            height: 100px;
+            margin: 5px;
+            cursor: pointer;
+            border: 1px solid #000;
+        }
+        .articles {
+            margin-top: 20px;
+            border: 1px solid black;
+            padding: 10px;
+        }
+        .article-inputs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .article-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .article-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        .text-controls {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        .text-controls input[type="color"] {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            border: 1px solid #ccc;
+        }
+        .text-controls select {
+            height: 30px;
+        }
+        .template-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .template-color {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            border: 1px solid #;
+        }
+        .color-btn {
+            padding: 8px 12px;
+            border: none;
+            cursor: pointer;
+            color: white;
+            border-radius: 4px;
+            margin: 2px;
+        }
+        /* Новый контейнер для правой части */
+    .right-panel {
+        flex: 1;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 600px;
+    }
+
+    /* Адаптация для мобильных устройств */
+    @media (max-width: 1600px) {
+        .main-content {
+            flex-direction: column;
+        }
+        
+        .right-panel {
+            grid-template-columns: 1fr;
+        }
+        
+        #container {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 3/4;
+        }
+    }
+
+    /* Общие стили для блоков */
+    .category, .tools, .templates, .articles, .text-entry, .image-picker {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background-color: #f0f8ff; /* Пастельный голубой */
+    }
+
+    /* Стили для кнопок */
+    button {
+        background-color: #87CEEB;
+        color: #333;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        font-weight: 600;
+        margin: 5px;
+    }
+
+    button:hover {
+        background-color: #6cb3d1;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+        transform: translateY(-1px);
+    }
+
+    button:active {
+        background-color: #5a9eb8;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        transform: translateY(1px);
+    }
+    .size-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.size-controls input {
+    width: 80px;
+    padding: 5px;
+}
+.thumbnails-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.thumbnail-container {
+    position: relative;
+    display: inline-block;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+.thumbnail {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    background: #f5f5f5;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 18px;
+    height: 18px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.delete-btn:hover {
+    opacity: 1;
+}
+.article-inputs input[type="text"] {
+    width: 100px;
+    padding: 5px;
+    margin: 2px;
+}
+    </style>
+</head>
+<body>
+    <div class="main-content">
+    <div id="container"></div>
+    <div class="right-panel">
+    <div class="image-picker">
+        <input type="file" id="imageInput" accept="image/*" style="display: none;">
+        <button id="addImageBtn">Добавить фон</button>
+        <select id="categorySelect">
+            <option value="Тимошенков">Тимошенков</option>
+            <option value="Неясов">Неясов</option>
+            <option value="Иванченко">Иванченко</option>
+        </select>
+        <button id="downloadBtn">Скачать изображение</button>
+    </div>
+    <div class="category" id="Тимошенков">
+        <div class="category-title">Тимошенков</div>
+    </div>
+    <div class="category" id="Неясов">
+        <div class="category-title">Неясов</div>
+    </div>
+    <div class="category" id="Иванченко">
+        <div class="category-title">Иванченко</div>
+    </div>
+    <div class="text-entry">
+        <input type="text" id="textInput" placeholder="Добавить текст">
+        <button id="addTextBtn">Добавить текст</button>
+        Размер текста: <input type="number" id="textSizeInput" value="60" min="10" max="100">
+    </div>
+    <div id="duplicateTextContainer"></div>
+    <div class="tools">
+        <div class="category-title">Оснастки</div>
+        <button id="addToolImageBtn">Добавить изображение</button>
+        <input type="file" id="toolImageInput" accept="image/*" style="display: none;">
+        <div id="toolImagesContainer"></div>
+        Ширина: <input type="number" id="imageWidthInput" placeholder="Ширина" min="1">
+        Высота: <input type="number" id="imageHeightInput" placeholder="Высота" min="1">
+        <button id="resizeImageBtn">Изменить</button>
+    </div>
+    <div class="templates">
+        <div class="category-title">Макеты</div>
+        <button id="addTemplateBtn">Добавить макеты</button>
+        <input type="file" id="templateInput" accept="image/*" multiple style="display: none;">
+        <div class="template-controls">
+            <button class="color-btn" style="background-color: #29367a;" data-color="#29367a">Синий цвет</button>
+            <button class="color-btn" style="background-color: #000000;" data-color="#000000">Чёрный цвет</button>
+            <button class="color-btn" style="background-color: #e20d0d;" data-color="#e20d0d">Красный цвет</button>
+        </div>
+        <div class="size-controls">
+            Ширина: <input type="number" id="templateWidth" value="400" min="1">
+            Высота: <input type="number" id="templateHeight" value="400" min="1">
+            <button id="resizeTemplateBtn">Изменить макет</button>
+        </div>
+        <div class="template-controls">
+            <button id="getCoordsBtn" class="color-btn">Получить координаты</button>
+            <input type="text" id="coordsDisplay" readonly style="width: 200px; margin-left: 10px;">
+        </div>
+        <button id="automateBtn">Запустить автоматизацию</button>
+        <div id="templateImagesContainer"></div>
+    </div>
+    <div class="templates">
+        <div class="category-title">Макеты футболок</div>
+        <button id="addTshirtTemplateBtn">Добавить макет</button>
+        <input type="file" id="tshirtTemplateInput" accept="image/*" multiple style="display: none;">
+        <div class="template-controls">
+            <button id="duplicateTemplateBtn">Дублировать макет</button>
+        </div>
+        <div class="size-controls">
+            Ширина: <input type="number" id="tshirtTemplateWidth" value="400" min="1">
+            Высота: <input type="number" id="tshirtTemplateHeight" value="400" min="1">
+            <button id="resizeTshirtTemplateBtn">Изменить макет</button>
+        </div>
+        <div class="template-controls">
+            <button id="getTshirtCoordsBtn" class="color-btn">Получить координаты</button>
+            <input type="text" id="tshirtCoordsDisplay" readonly style="width: 200px; margin-left: 10px;">
+        </div>
+        <button id="automateTshirtBtn">Запустить автоматизацию</button>
+        <div id="tshirtTemplateImagesContainer" class="thumbnails-container"></div>
+    </div>
+    <div class="articles">
+        <div class="category-title">Артикулы</div>
+        <div class="article-controls">
+            <div class="article-inputs">
+                <input type="text" id="articlePrefix" placeholder="Префикс (например, Р-)" value="Р-">
+                <input type="number" id="articleStartNumber" placeholder="Начальный номер" value="1" min="1">
+                <input type="text" id="fileNameInput" placeholder="Имя файла" value="1" style="width: 100px;">
+            </div>
+            <div class="text-controls">
+                Размер: <input type="number" id="articleFontSize" value="15" min="10" max="200" style="width: 50px;">
+                Цвет: <input type="color" id="articleColor" value="#29367a">
+                Шрифт: 
+                <select id="articleFontFamily">
+                    <option value="Arial">Arial</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Courier New">Courier New</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Verdana">Verdana</option>
+                </select>
+            </div>
+        </div>
+        <button id="addArticleBtn">Добавить артикул</button>
+    </div>
+</div>
+</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        const container = document.getElementById('container');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const textSizeInput = document.getElementById('textSizeInput');
+        const textInput = document.getElementById('textInput');
+        const addTextBtn = document.getElementById('addTextBtn');
+        const duplicateTextContainer = document.getElementById('duplicateTextContainer');
+        const imageInput = document.getElementById('imageInput');
+        const addImageBtn = document.getElementById('addImageBtn');
+        const categorySelect = document.getElementById('categorySelect');
+        const templateInput = document.getElementById('templateInput');
+        const addTemplateBtn = document.getElementById('addTemplateBtn');
+        const automateBtn = document.getElementById('automateBtn');
+        const templateImagesContainer = document.getElementById('templateImagesContainer');
+        let currentColor = '#000000'; // Начальный цвет по умолчанию
+        let mainTemplatePosition = { left: "0px", top: "0px" }; // Позиция основного макета
+        let globalPositions = []; // Позиции дубликатов
+
+        // Загрузка изображений из localStorage
+        function loadImages() {
+            const categories = ['Тимошенков', 'Неясов', 'Иванченко'];
+            categories.forEach(category => {
+                const images = JSON.parse(localStorage.getItem(category)) || [];
+                images.forEach(imgSrc => {
+                    createThumbnail(imgSrc, category);
+                });
+            });
+        }
+
+        // Сохранение изображения в localStorage
+        function saveImage(category, imgSrc) {
+            const images = JSON.parse(localStorage.getItem(category)) || [];
+            images.push(imgSrc);
+            localStorage.setItem(category, JSON.stringify(images));
+        }
+
+        // Создание миниатюры
+        function createThumbnail(imgSrc, category) {
+            const thumbnailContainer = document.createElement('div');
+            thumbnailContainer.style.position = 'relative';
+            thumbnailContainer.style.display = 'inline-block';
+
+            const thumbnail = document.createElement('img');
+            thumbnail.src = imgSrc;
+            thumbnail.classList.add('thumbnail');
+
+            thumbnail.addEventListener('click', () => {
+                container.style.backgroundImage = `url(${imgSrc})`;
+                container.style.backgroundSize = 'cover';
+            });
+
+            // Создание крестика для удаления
+            const deleteBtn = document.createElement('div');
+            deleteBtn.style.position = 'absolute';
+            deleteBtn.style.top = '5px';
+            deleteBtn.style.right = '5px';
+            deleteBtn.style.width = '10px';
+            deleteBtn.style.height = '10px';
+            deleteBtn.style.cursor = 'pointer';
+            deleteBtn.style.backgroundColor = 'red';
+            deleteBtn.style.color = 'white';
+            deleteBtn.style.textAlign = 'center';
+            deleteBtn.style.lineHeight = '10px';
+            deleteBtn.style.borderRadius = '50%';
+            deleteBtn.textContent = '✖';
+
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                removeImage(imgSrc, category, thumbnailContainer);
+            });
+
+            thumbnailContainer.appendChild(thumbnail);
+            thumbnailContainer.appendChild(deleteBtn);
+            const categoryContainer = document.getElementById(category);
+            categoryContainer.appendChild(thumbnailContainer);
+        }
+
+        // Функция для удаления изображения
+        function removeImage(imgSrc, category, thumbnailContainer) {
+            const images = JSON.parse(localStorage.getItem(category)) || [];
+            const updatedImages = images.filter(img => img !== imgSrc);
+            localStorage.setItem(category, JSON.stringify(updatedImages));
+            thumbnailContainer.remove();
+            removeImageFromContainer(imgSrc);
+        }
+
+        function removeImageFromContainer(imgSrc) {
+            const images = container.getElementsByTagName('img');
+            for (let img of images) {
+                if (img.src === imgSrc) {
+                    img.remove();
+                    break;
+                }
+            }
+        }
+
+        // Загрузка изображений при загрузке страницы
+        loadImages();
+
+        // Добавление изображения в качестве фона
+        addImageBtn.addEventListener('click', () => {
+            imageInput.click();
+        });
+
+        imageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const imgSrc = e.target.result;
+                    const selectedCategory = categorySelect.value;
+                    createThumbnail(imgSrc, selectedCategory);
+                    saveImage(selectedCategory, imgSrc);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Изменение размера текста
+        textSizeInput.addEventListener('input', () => {
+            const newSize = textSizeInput.value + 'px';
+            container.style.fontSize = newSize;
+        });
+
+        // Добавление текста в контейнер
+        addTextBtn.addEventListener('click', () => {
+            const text = textInput.value;
+            if (text) {
+                createTextEntry(text);
+                textInput.value = '';
+            }
+        });
+
+        function createTextEntry(text) {
+            const textEntry = document.createElement('div');
+            textEntry.classList.add('text-entry');
+            const textElement = document.createElement('div');
+            textElement.textContent = text;
+            textElement.classList.add('draggable');
+            container.appendChild(textElement);
+            makeDraggable(textElement);
+            
+            const sizeInput = document.createElement('input');
+            sizeInput.type = 'number';
+            sizeInput.value = 60;
+            sizeInput.style.width = '50px';
+            sizeInput.addEventListener('input', () => {
+                const newSize = sizeInput.value + 'px';
+                textElement.style.fontSize = newSize;
+            });
+            
+            const editTextInput = document.createElement('input');
+            editTextInput.type = 'text';
+            editTextInput.value = text;
+            editTextInput.placeholder = 'Изменить текст';
+            editTextInput.addEventListener('input', () => {
+                textElement.textContent = editTextInput.value;
+            });
+            
+            const colorInput = document.createElement('input');
+            colorInput.type = 'color';
+            colorInput.addEventListener('input', () => {
+                textElement.style.color = colorInput.value;
+            });
+            
+            const duplicateBtn = document.createElement('button');
+            duplicateBtn.textContent = 'Дублировать';
+            duplicateBtn.addEventListener('click', () => {
+                createTextEntry(textElement.textContent);
+            });
+            
+            textEntry.appendChild(sizeInput);
+            textEntry.appendChild(editTextInput);
+            textEntry.appendChild(colorInput);
+            textEntry.appendChild(duplicateBtn);
+            duplicateTextContainer.appendChild(textEntry);
+        }
+
+        // Функция для перетаскивания элементов
+        function makeDraggable(element) {
+            let offsetX, offsetY;
+            element.addEventListener('mousedown', (e) => {
+                offsetX = e.clientX - element.getBoundingClientRect().left;
+                offsetY = e.clientY - element.getBoundingClientRect().top;
+                document.addEventListener('mousemove', mouseMoveHandler);
+                document.addEventListener('mouseup', mouseUpHandler);
+            });
+            
+            function mouseMoveHandler(e) {
+                const containerRect = container.getBoundingClientRect();
+                const newX = e.clientX - containerRect.left - offsetX;
+                const newY = e.clientY - containerRect.top - offsetY;
+                
+                if (newX >= 0 && newX <= containerRect.width - element.offsetWidth) {
+                    element.style.left = newX + 'px';
+                }
+                if (newY >= 0 && newY <= containerRect.height - element.offsetHeight) {
+                    element.style.top = newY + 'px';
+                }
+            }
+            
+            function mouseUpHandler() {
+                document.removeEventListener('mousemove', mouseMoveHandler);
+                document.removeEventListener('mouseup', mouseUpHandler);
+            }
+        }
+
+        // Блок "Оснастки"
+        const toolImageInput = document.getElementById('toolImageInput');
+        const toolImagesContainer = document.getElementById('toolImagesContainer');
+        const imageWidthInput = document.getElementById('imageWidthInput');
+        const imageHeightInput = document.getElementById('imageHeightInput');
+        const resizeImageBtn = document.getElementById('resizeImageBtn');
+
+        document.getElementById('addToolImageBtn').addEventListener('click', () => {
+            toolImageInput.click();
+        });
+
+        toolImageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const imgSrc = e.target.result;
+                    const category = 'Оснастки';
+                    createToolThumbnail(imgSrc, category);
+                    saveToolImage(category, imgSrc);
+                    addImageToContainer(imgSrc, file.width, file.height);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function addImageToContainer(imgSrc, width, height) {
+            const imgElement = document.createElement('img');
+            imgElement.src = imgSrc;
+            imgElement.style.width = width + 'px';
+            imgElement.style.height = height + 'px';
+            imgElement.classList.add('draggable');
+            container.appendChild(imgElement);
+            makeDraggable(imgElement);
+        }
+
+        function saveToolImage(category, imgSrc) {
+            const images = JSON.parse(localStorage.getItem(category)) || [];
+            images.push(imgSrc);
+            localStorage.setItem(category, JSON.stringify(images));
+        }
+
+        resizeImageBtn.addEventListener('click', () => {
+            const width = imageWidthInput.value;
+            const height = imageHeightInput.value;
+            const images = container.getElementsByTagName('img');
+            for (let img of images) {
+                img.style.width = width + 'px';
+                img.style.height = height + 'px';
+            }
+        });
+
+        function createToolThumbnail(imgSrc, category) {
+            const thumbnailContainer = document.createElement('div');
+            thumbnailContainer.style.position = 'relative';
+            thumbnailContainer.style.display = 'inline-block';
+            
+            const thumbnail = document.createElement('img');
+            thumbnail.src = imgSrc;
+            thumbnail.classList.add('tool-thumbnail');
+
+            const deleteBtn = document.createElement('div');
+            deleteBtn.style.position = 'absolute';
+            deleteBtn.style.top = '5px';
+            deleteBtn.style.right = '5px';
+            deleteBtn.style.width = '10px';
+            deleteBtn.style.height = '10px';
+            deleteBtn.style.cursor = 'pointer';
+            deleteBtn.style.backgroundColor = 'red';
+            deleteBtn.style.color = 'white';
+            deleteBtn.style.textAlign = 'center';
+            deleteBtn.style.lineHeight = '10px';
+            deleteBtn.style.borderRadius = '50%';
+            deleteBtn.textContent = '✖';
+
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                removeToolImage(imgSrc, category, thumbnailContainer);
+                removeImageFromContainer(imgSrc);
+            });
+
+            thumbnailContainer.appendChild(thumbnail);
+            thumbnailContainer.appendChild(deleteBtn);
+            toolImagesContainer.appendChild(thumbnailContainer);
+        }
+
+        function removeToolImage(imgSrc, category, thumbnailContainer) {
+            const images = JSON.parse(localStorage.getItem(category)) || [];
+            const updatedImages = images.filter(img => img !== imgSrc);
+            localStorage.setItem(category, JSON.stringify(updatedImages));
+            thumbnailContainer.remove();
+            removeImageFromContainer(imgSrc);
+        }
+
+        function loadToolImages() {
+            const category = 'Оснастки';
+            const images = JSON.parse(localStorage.getItem(category)) || [];
+            images.forEach(imgSrc => {
+                createToolThumbnail(imgSrc, category);
+            });
+        }
+
+        loadToolImages();
+
+        // Блок "Макеты"
+        addTemplateBtn.addEventListener('click', () => {
+    templateInput.click();
+});
+
+templateInput.addEventListener('change', async (event) => {
+    const files = Array.from(event.target.files);
+    
+    // Сортируем файлы по имени как в проводнике
+    files.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+    
+    // Очищаем предыдущие макеты
+    templateImagesContainer.innerHTML = '';
+    
+    // Добавляем файлы в правильном порядке
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+        
+        reader.onload = async (e) => {
+            const imgSrc = e.target.result;
+            
+            // Создаем миниатюру для всех файлов
+            createTemplateThumbnail(imgSrc);
+            
+            // Добавляем в контейнер только первый макет
+            if(i === 0) {
+                addTemplateToContainer(imgSrc);
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+function createTemplateThumbnail(imgSrc) {
+    const thumbnailContainer = document.createElement('div');
+    thumbnailContainer.style.position = 'relative';
+    thumbnailContainer.style.display = 'inline-block';
+    
+    const thumbnail = document.createElement('img');
+    thumbnail.src = imgSrc;
+    thumbnail.classList.add('template-thumbnail');
+
+    thumbnail.addEventListener('click', () => {
+        // Удаляем все предыдущие шаблоны из контейнера
+        const existingTemplates = container.querySelectorAll('.template-image');
+        existingTemplates.forEach(template => template.remove());
+        
+        // Добавляем выбранный шаблон
+        addTemplateToContainer(imgSrc);
+    });
+
+            const deleteBtn = document.createElement('div');
+            deleteBtn.style.position = 'absolute';
+            deleteBtn.style.top = '5px';
+            deleteBtn.style.right = '5px';
+            deleteBtn.style.width = '10px';
+            deleteBtn.style.height = '10px';
+            deleteBtn.style.cursor = 'pointer';
+            deleteBtn.style.backgroundColor = 'red';
+            deleteBtn.style.color = 'white';
+            deleteBtn.style.textAlign = 'center';
+            deleteBtn.style.lineHeight = '10px';
+            deleteBtn.style.borderRadius = '50%';
+            deleteBtn.textContent = '✖';
+
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                thumbnailContainer.remove();
+                // Удаляем соответствующий шаблон из контейнера
+                const templateImages = container.querySelectorAll('.template-image');
+                for (let img of templateImages) {
+                    if (img.src === imgSrc) {
+                        img.remove();
+                        break;
+                    }
+                }
+            });
+
+            thumbnailContainer.appendChild(thumbnail);
+            thumbnailContainer.appendChild(deleteBtn);
+            templateImagesContainer.appendChild(thumbnailContainer);
+        }
+
+        function addTemplateToContainer(imgSrc) {
+            const imgElement = document.createElement('img');
+            imgElement.src = imgSrc;
+            imgElement.style.width = templateWidth.value + 'px';
+            imgElement.style.height = templateHeight.value + 'px';
+            imgElement.classList.add('draggable');
+            imgElement.classList.add('template-image');
+            container.appendChild(imgElement);
+            makeDraggable(imgElement);
+            applyColorToImage(imgElement, currentColor);
+        }
+
+        
+        // Скачивание изображения
+        downloadBtn.addEventListener('click', () => {
+            html2canvas(container, { scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = 'container.png';
+                link.click();
+            }).catch(err => {
+                console.error('Ошибка при создании изображения:', err);
+            });
+        });
+
+        const articlePrefix = document.getElementById('articlePrefix');
+        const articleStartNumber = document.getElementById('articleStartNumber');
+        const articleFontSize = document.getElementById('articleFontSize');
+        const articleColor = document.getElementById('articleColor');
+        const articleFontFamily = document.getElementById('articleFontFamily');
+        const addArticleBtn = document.getElementById('addArticleBtn');
+        
+        // Массив для хранения добавленных артикулов
+        let articles = [];
+        
+        // Добавление артикула
+        addArticleBtn.addEventListener('click', () => {
+            const prefix = articlePrefix.value.trim();
+            const number = articleStartNumber.value;
+            const fontSize = articleFontSize.value + 'px';
+            const color = articleColor.value;
+            const fontFamily = articleFontFamily.value;
+            
+            if (prefix && number) {
+                const articleText = `${prefix}${number}`;
+                const articleId = Date.now(); // Уникальный ID для артикула
+                createArticleElement(articleText, fontSize, color, fontFamily, articleId);
+                articles.push({ 
+                    prefix, 
+                    number: parseInt(number),
+                    fontSize,
+                    color,
+                    fontFamily,
+                    id: articleId
+                });
+            }
+        });
+        
+        // Создание элемента артикула в контейнере
+        function createArticleElement(text, fontSize, color, fontFamily, id) {
+            const articleElement = document.createElement('div');
+            articleElement.textContent = text;
+            articleElement.classList.add('draggable');
+            articleElement.classList.add('article');
+            articleElement.style.fontSize = fontSize;
+            articleElement.style.color = color;
+            articleElement.style.fontFamily = fontFamily;
+            articleElement.style.position = 'absolute';
+            articleElement.style.cursor = 'move';
+            articleElement.dataset.id = id;
+            container.appendChild(articleElement);
+            makeDraggable(articleElement);
+            
+            // Добавляем возможность удаления по двойному клику
+            articleElement.addEventListener('dblclick', () => {
+                articleElement.remove();
+                articles = articles.filter(item => item.id != id);
+            });
+        }
+        
+      
+
+
+
+
+
+
+
+
+// Обновленная функция применения цвета
+function applyColorToImage(imgElement, color) {
+    return new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const tempImg = new Image();
+        
+        tempImg.crossOrigin = 'anonymous';
+        tempImg.src = imgElement.src;
+        
+        tempImg.onload = () => {
+            canvas.width = tempImg.naturalWidth;
+            canvas.height = tempImg.naturalHeight;
+            
+            // Заливаем выбранным цветом
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Применяем маску изображения
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.drawImage(tempImg, 0, 0);
+            
+            // Обновляем источник изображения
+            imgElement.src = canvas.toDataURL();
+            resolve();
+        };
+    });
+}
+
+// Обновленный обработчик автоматизации
+automateBtn.addEventListener('click', async () => {
+    const zip = new JSZip();
+    const templateThumbnails = Array.from(templateImagesContainer.querySelectorAll('img'))
+        .sort((a, b) => a.src.localeCompare(b.src, 'ru', { numeric: true }));
+    const prefix = document.getElementById('articlePrefix').value.trim();
+    const fileName = document.getElementById('fileNameInput').value.trim() || '1';
+    let currentNumber = parseInt(document.getElementById('articleStartNumber').value);
+
+    const originalBorder = container.style.border;
+    const originalBackground = container.style.backgroundImage;
+    const originalElements = Array.from(container.children).map(el => ({
+        element: el.cloneNode(true),
+        left: el.style.left,
+        top: el.style.top
+    }));
+    
+    const originalArticles = Array.from(container.querySelectorAll('.article')).map(el => ({
+        element: el,
+        left: el.style.left,
+        top: el.style.top,
+        content: el.textContent
+    }));
+
+    container.style.border = 'none';
+
+    for (let i = 0; i < templateThumbnails.length; i++) {
+        container.innerHTML = '';
+        originalElements.forEach(({element, left, top}) => {
+            const clone = element.cloneNode(true);
+            clone.style.left = left;
+            clone.style.top = top;
+            container.appendChild(clone);
+        });
+
+        const currentArticle = `${prefix}${currentNumber}`;
+        
+        container.querySelectorAll('.article').forEach(article => {
+            article.textContent = currentArticle;
+        });
+
+        const template = container.querySelector('.template-image');
+        if (template) {
+            template.src = templateThumbnails[i].src;
+            await applyColorToImage(template, currentColor);
+        }
+
+        const canvas = await html2canvas(container, { 
+            scale: 2,
+            backgroundColor: '#ffffff'
+        });
+        
+        const folderName = currentArticle;
+        const imageData = canvas.toDataURL('image/png')
+            .replace(/^data:image\/png;base64,/, "");
+        zip.folder(folderName).file(`${fileName}.png`, imageData, {base64: true});
+
+        currentNumber++;
+    }
+
+    container.style.border = originalBorder;
+    container.style.backgroundImage = originalBackground;
+    container.innerHTML = '';
+    originalElements.forEach(({element, left, top}) => {
+        const clone = element.cloneNode(true);
+        clone.style.left = left;
+        clone.style.top = top;
+        container.appendChild(clone);
+    });
+    originalArticles.forEach(article => {
+        article.element.textContent = article.content;
+    });
+
+    zip.generateAsync({type: 'blob'}).then(content => {
+        saveAs(content, 'артикулы.zip');
+    });
+});
+
+document.querySelectorAll('.color-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            currentColor = e.target.dataset.color;
+            
+            // Применяем цвет ко всем текущим макетам в контейнере
+            const templateImages = container.querySelectorAll('.template-image');
+            templateImages.forEach(async img => {
+                await applyColorToImage(img, currentColor);
+            });
+        });
+    });
+  
+
+
+    // Получаем элементы управления
+const templateWidth = document.getElementById('templateWidth');
+const templateHeight = document.getElementById('templateHeight');
+const resizeTemplateBtn = document.getElementById('resizeTemplateBtn');
+
+// Обработчик изменения размеров
+resizeTemplateBtn.addEventListener('click', () => {
+    const width = templateWidth.value + 'px';
+    const height = templateHeight.value + 'px';
+    
+    // Применяем размеры ко всем шаблонам в контейнере
+    const templates = container.querySelectorAll('.template-image');
+    templates.forEach(template => {
+        template.style.width = width;
+        template.style.height = height;
+    });
+});
+
+// Обновляем функцию добавления шаблона
+function addTemplateToContainer(imgSrc) {
+    const imgElement = document.createElement('img');
+    imgElement.src = imgSrc;
+    imgElement.style.width = templateWidth.value + 'px'; // Используем текущее значение
+    imgElement.style.height = templateHeight.value + 'px'; // Используем текущее значение
+    imgElement.classList.add('draggable');
+    imgElement.classList.add('template-image');
+    container.appendChild(imgElement);
+    makeDraggable(imgElement);
+    applyColorToImage(imgElement, currentColor);
+}
+
+
+
+
+
+
+
+
+
+
+
+// Добавить этот JavaScript код после оригинального скрипта
+const tshirtTemplateInput = document.getElementById('tshirtTemplateInput');
+const tshirtTemplateImagesContainer = document.getElementById('tshirtTemplateImagesContainer');
+const duplicateTemplateBtn = document.getElementById('duplicateTemplateBtn');
+const tshirtTemplateWidth = document.getElementById('tshirtTemplateWidth');
+const tshirtTemplateHeight = document.getElementById('tshirtTemplateHeight');
+const resizeTshirtTemplateBtn = document.getElementById('resizeTshirtTemplateBtn');
+const automateTshirtBtn = document.getElementById('automateTshirtBtn');
+
+document.addEventListener('DOMContentLoaded', function() {
+    let templates = [];
+    let globalPositions = [];
+    const container = document.getElementById('container');
+    
+    document.getElementById('addTshirtTemplateBtn').addEventListener('click', () => {
+        document.getElementById('tshirtTemplateInput').click();
+    });
+
+    document.getElementById('tshirtTemplateInput').addEventListener('change', async function(e) {
+    // Преобразуем FileList в массив и сохраняем порядок
+    const files = Array.from(e.target.files);
+    
+    // Создаем массив промисов для загрузки файлов
+    const loadPromises = files.map(file => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (event) => resolve({
+                src: event.target.result,
+                name: file.name // Сохраняем имя файла для сортировки
+            });
+            reader.readAsDataURL(file);
+        });
+    });
+
+    // Ожидаем загрузку всех файлов
+    const loadedFiles = await Promise.all(loadPromises);
+    
+    // Сортируем файлы по имени для сохранения порядка из папки
+    loadedFiles.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Добавляем файлы в правильном порядке
+    loadedFiles.forEach((file, index) => {
+        templates.push(file.src);
+        createThumbnail(file.src);
+        
+        if(index === 0) {
+            const mainElement = createTemplateElement(file.src);
+            container.appendChild(mainElement);
+            saveGlobalPositions();
+        }
+    });
+});
+
+    document.getElementById('duplicateTemplateBtn').addEventListener('click', () => {
+        const activeTemplate = container.querySelector('.tshirt-template');
+        if(activeTemplate) {
+            const clone = activeTemplate.cloneNode(true);
+            clone.style.left = (parseInt(activeTemplate.style.left) + 50) + 'px';
+            clone.style.top = (parseInt(activeTemplate.style.top) + 50) + 'px';
+            container.appendChild(clone);
+            makeDraggable(clone);
+            saveGlobalPositions();
+        }
+    });
+
+    document.getElementById('resizeTshirtTemplateBtn').addEventListener('click', () => {
+    const width = tshirtTemplateWidth.value + 'px';
+    const height = tshirtTemplateHeight.value + 'px';
+    
+    container.querySelectorAll('.tshirt-template').forEach(template => {
+        template.style.width = width;
+        template.style.height = height;
+    });
+});
+
+// Обновлённый обработчик кнопки "Запустить автоматизацию"
+document.getElementById('automateTshirtBtn').addEventListener('click', async () => {
+    if(templates.length === 0) return;
+
+    const zip = new JSZip();
+    const prefix = document.getElementById('articlePrefix').value.trim();
+    const fileName = document.getElementById('fileNameInput').value.trim() || '1';
+    let currentNumber = parseInt(document.getElementById('articleStartNumber').value);
+
+    const originalElements = Array.from(container.children).filter(child => 
+        !child.classList.contains('tshirt-template')
+    );
+    const originalBackground = container.style.backgroundImage;
+
+    for(let i = 0; i < templates.length; i++) {
+        const folderName = `${prefix}${currentNumber}`;
+        const folder = zip.folder(folderName);
+
+        clearContainer();
+        
+        const mainElement = createTemplateElement(templates[i]);
+        mainElement.style.left = mainTemplatePosition.left;
+        mainElement.style.top = mainTemplatePosition.top;
+        container.appendChild(mainElement);
+        
+        globalPositions.forEach(pos => {
+            const element = createTemplateElement(templates[i]);
+            element.style.left = pos.left;
+            element.style.top = pos.top;
+            container.appendChild(element);
+        });
+
+        updateArticles(folderName);
+
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        const canvas = await html2canvas(container, {
+            scale: 2,
+            backgroundColor: '#ffffff'
+        });
+
+        const imageData = canvas.toDataURL('image/jpeg', 0.9)
+            .replace(/^data:image\/jpeg;base64,/, "");
+        folder.file(`${fileName}.jpg`, imageData, {base64: true});
+        
+        currentNumber++;
+    }
+
+    container.style.backgroundImage = originalBackground;
+    originalElements.forEach(el => container.appendChild(el));
+    
+    zip.generateAsync({type: 'blob'}).then(content => {
+        saveAs(content, 'tshirt_designs.zip');
+    });
+});
+
+function updateArticles(currentArticle) {
+    container.querySelectorAll('.article').forEach(el => {
+        el.textContent = currentArticle;
+    });
+}
+
+function loadTemplateWithPositions(imgSrc) {
+    // Добавляем основной макет
+    const mainElement = createTemplateElement(imgSrc);
+    container.appendChild(mainElement);
+    
+    // Добавляем дубликаты
+    globalPositions.forEach(pos => {
+        const element = createTemplateElement(imgSrc);
+        element.style.left = pos.left;
+        element.style.top = pos.top;
+        container.appendChild(element);
+    });
+}
+
+function saveGlobalPositions() {
+    const allTemplates = container.querySelectorAll('.tshirt-template');
+    
+    // Сохраняем позицию основного макета
+    if(allTemplates.length > 0) {
+        const mainRect = allTemplates[0].getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        mainTemplatePosition = {
+            left: mainRect.left - containerRect.left + "px",
+            top: mainRect.top - containerRect.top + "px"
+        };
+    }
+
+        // Сохраняем позиции дубликатов (все, кроме первого)
+        globalPositions = [];
+    allTemplates.forEach((element, index) => {
+        if(index === 0) return;
+        
+        const rect = element.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        
+        globalPositions.push({
+            left: rect.left - containerRect.left + "px",
+            top: rect.top - containerRect.top + "px"
+        });
+    });
+}
+
+    function createTemplateElement(imgSrc) {
+    const img = document.createElement('img');
+    img.src = imgSrc;
+    img.className = 'tshirt-template draggable';
+    img.style.position = 'absolute';
+    img.style.width = tshirtTemplateWidth.value + 'px'; // Используем текущие значения
+    img.style.height = tshirtTemplateHeight.value + 'px';
+    img.style.left = '0px';
+    img.style.top = '0px';
+    img.style.cursor = 'move';
+    makeDraggable(img);
+    return img;
+}
+
+    function makeDraggable(element) {
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+
+        element.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            initialLeft = parseInt(element.style.left) || 0;
+            initialTop = parseInt(element.style.top) || 0;
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+
+        function onMouseMove(e) {
+            if(!isDragging) return;
+            
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            
+            const containerRect = container.getBoundingClientRect();
+            const elementRect = element.getBoundingClientRect();
+            
+            const newLeft = Math.max(0, Math.min(
+                initialLeft + dx, 
+                containerRect.width - elementRect.width
+            ));
+            
+            const newTop = Math.max(0, Math.min(
+                initialTop + dy, 
+                containerRect.height - elementRect.height
+            ));
+
+            element.style.left = `${newLeft}px`;
+            element.style.top = `${newTop}px`;
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+            saveGlobalPositions();
+        }
+    }
+
+    function clearContainer() {
+        container.querySelectorAll('.tshirt-template').forEach(element => element.remove());
+    }
+
+    // Функции для миниатюр
+    function createThumbnail(imgSrc) {
+        const thumbnail = document.createElement('img');
+        thumbnail.src = imgSrc;
+        thumbnail.className = 'thumbnail';
+        
+        const deleteBtn = document.createElement('div');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.innerHTML = '✖';
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const index = templates.indexOf(imgSrc);
+            if(index >= 0) {
+                templates.splice(index, 1);
+                thumbnail.parentElement.remove();
+            }
+        });
+
+        const thumbnailContainer = document.createElement('div');
+        thumbnailContainer.className = 'thumbnail-container';
+        thumbnailContainer.appendChild(thumbnail);
+        thumbnailContainer.appendChild(deleteBtn);
+        document.getElementById('tshirtTemplateImagesContainer').appendChild(thumbnailContainer);
+    }
+});
+
+
+ // Переменные для хранения координат
+ let lastTemplateCoords = { left: "0px", top: "0px" };
+    let lastTshirtCoords = { left: "0px", top: "0px" };
+
+    // Функция для обновления координат при клике на макет
+    function setupCoordinateTracking() {
+        // Для обычных макетов
+        container.addEventListener('click', function(e) {
+            const target = e.target;
+            if (target.classList.contains('template-image')) {
+                lastTemplateCoords = {
+                    left: target.style.left,
+                    top: target.style.top
+                };
+            }
+        });
+
+        // Для макетов футболок
+        container.addEventListener('click', function(e) {
+            const target = e.target;
+            if (target.classList.contains('tshirt-template')) {
+                lastTshirtCoords = {
+                    left: target.style.left,
+                    top: target.style.top
+                };
+            }
+        });
+    }
+
+// Обработчики для кнопок получения координат
+document.getElementById('getCoordsBtn').addEventListener('click', function() {
+        document.getElementById('coordsDisplay').value = 
+            `X: ${lastTemplateCoords.left}, Y: ${lastTemplateCoords.top}`;
+    });
+
+    document.getElementById('getTshirtCoordsBtn').addEventListener('click', function() {
+        document.getElementById('tshirtCoordsDisplay').value = 
+            `X: ${lastTshirtCoords.left}, Y: ${lastTshirtCoords.top}`;
+    });
+
+    // Обновленная функция makeDraggable с сохранением координат
+    function makeDraggable(element) {
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+
+        element.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            initialLeft = parseInt(element.style.left) || 0;
+            initialTop = parseInt(element.style.top) || 0;
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+
+        function onMouseMove(e) {
+            if(!isDragging) return;
+            
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            
+            const containerRect = container.getBoundingClientRect();
+            const elementRect = element.getBoundingClientRect();
+            
+            const newLeft = Math.max(0, Math.min(
+                initialLeft + dx, 
+                containerRect.width - elementRect.width
+            ));
+            
+            const newTop = Math.max(0, Math.min(
+                initialTop + dy, 
+                containerRect.height - elementRect.height
+            ));
+
+            element.style.left = `${newLeft}px`;
+            element.style.top = `${newTop}px`;
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+            
+            // Сохраняем координаты при отпускании
+            if(element.classList.contains('template-image')) {
+                lastTemplateCoords = {
+                    left: element.style.left,
+                    top: element.style.top
+                };
+            }
+            else if(element.classList.contains('tshirt-template')) {
+                lastTshirtCoords = {
+                    left: element.style.left,
+                    top: element.style.top
+                };
+            }
+        }
+    }
+
+    // Инициализация отслеживания координат
+    setupCoordinateTracking();
+    </script>
+</body>
+</html>
